@@ -1,0 +1,30 @@
+ul[data-editor="true"][role="tree"] {
+    list-style-type: none;
+    padding-left: 20px;
+}
+ul[data-editor="true"][role="tree"] li {
+    cursor: move;
+}
+ul[data-editor="true"][role="tree"] li.dragging {
+    opacity: 0.5;
+}
+ul[data-editor="true"][role="tree"] li .node-content {
+    display: flex;
+    align-items: center;
+    border-style: none none solid none;
+    border-width: 1px;
+    border-color: #ccc;
+}
+ul[data-editor="true"][role="tree"] li .node-content .node-name {
+    flex-grow: 1;
+}
+ul[data-editor="true"][role="tree"] li .node-content button {
+    margin: 1px 5px;
+}   
+
+/* no list style for ul or nested ul with data-editor="true" and role="tree" at any level */
+ul[data-editor="true"][role="tree"],
+ul[data-editor="true"][role="tree"] ul {
+    list-style-type: none;
+    padding-left: 20px;
+}

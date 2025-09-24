@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tree Manager</title>
+    <link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+    <h1>Tree Manager API</h1>
+    <p>Use the TreeAPI from your browser console:</p>
+    <pre>
+// Example usage:
+const { TreeAPI } = await import('/static/tree.js');
+
+// Get all trees
+const trees = await TreeAPI.getTrees();
+
+// Create a tree
+const tree = await TreeAPI.createTree('My Tree');
+
+// Get nodes for tree 1
+const nodes = await TreeAPI.getTreeNodes(1);
+
+// Add a node
+const newNode = await TreeAPI.addNode(1, 1, 'Child Node', 'first-child');
+
+// Move a node
+await TreeAPI.moveNode(1, 2, 1, 'right');
+    </pre>
+
+    <script type="module">
+        // Make TreeAPI globally available for console testing
+        import { TreeAPI } from '/static/tree.js';
+        window.TreeAPI = TreeAPI;
+        async function test() {
+            const nodes = await TreeAPI.getTree();
+            console.log('Existing nodes:', nodes);
+            return nodes;
+        }
+        console.log('TreeAPI loaded. Use TreeAPI methods in console.');
+        const pre = document.querySelector('pre');
+        // Remove pre and add a div on double click
+        let div = null;
+        pre.addEventListener('dblclick', async () => {
+            pre.remove();
+            div = document.createElement('div');    
+            document.body.appendChild(div);
+  
+    const rootUl = document.createElement('ul');
+    rootUl.role = 'tree';
+    rootUl.ariaLabel = 'Tree Nodes Editor';
+    rootUl.dataset.editor = 'true';
+    div.appendChild(rootUl);
+
+    const uls = [rootUl]; // stack: uls[level] = ul for that level
+    const nodes = await test();
+
+    nodes.forEach(node => {
+        const li = document.createElement('li');
+        const span = document.createElement('span');
+        const node_name = document.createElement('span');
+        span.className = 'node-content';
+        node_name.textContent = node.name;
+        node_name.className = 'node-name';
+        span.appendChild(node_name);
+        const node_button = document.createElement('button');
+        node_button.textContent = '+';
+        node_button.title = 'Add child node';
+        span.appendChild(node_button);
+        span.dataset.nodeId = node.id;
+        span.dataset.treeId = node.tree_id;
+        li.appendChild(span);
+
+        // Ensure the stack has the right ul for this level
+        if (!uls[node.level]) {
+            // create a new ul inside the previous li
+            const parentLi = uls[node.level - 1].lastElementChild;
+            const newUl = document.createElement('ul');
+            parentLi.appendChild(newUl);
+            uls[node.level] = newUl;
+        }
+
+        // Trim stack if we moved up
+        uls.length = node.level + 1;
+
+        // Append to current level ul
+        uls[node.level].appendChild(li);
+    });
+        });
+
+
+
+    </script>
+</body>
+</html>
