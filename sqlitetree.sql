@@ -364,11 +364,34 @@ BEGIN
                 ELSE NULL
             END
         ) - 1,
-        right_shift = 2 * (
+        right_shift = CASE WHEN parent_exists THEN 2 * (
             SELECT COUNT(*) FROM tree 
             WHERE tree.lft BETWEEN move_operation_params.node_lft AND move_operation_params.node_rgt
             AND tree.level > move_operation_params.node_level
-        ) + 2
+        ) + 2 ELSE 0 END
+    FROM (
+        WITH target_parent_check AS (
+        SELECT 
+            COALESCE(pr.id > 0, 0) AS parent_exists
+        FROM (SELECT 1) AS dummy
+        LEFT JOIN (
+            SELECT parent.id
+            FROM tree AS parent, move_operation_params as mop
+            JOIN tree AS child ON child.id = mop.target_node_id
+            WHERE parent.lft < child.lft
+            AND parent.rgt > child.rgt
+            ORDER BY (parent.rgt - parent.lft) ASC
+            LIMIT 1
+        ) AS pr
+    ), target_check AS (
+        SELECT 
+            COALESCE(mop.target_node_id, 0) AS target_exists
+        FROM move_operation_params AS mop
+    ) SELECT CASE 
+        WHEN mop.position IN ('first-child', 'last-child') THEN target_check.target_exists
+        WHEN mop.position IN ('left', 'right') THEN target_parent_check.parent_exists
+     END AS parent_exists FROM move_operation_params AS mop, target_parent_check, target_check
+    ) AS parent
     WHERE move_operation_params.position IN ('first-child', 'last-child', 'left', 'right');
     
 END;
@@ -702,13 +725,7 @@ BEGIN
         level_change, left_right_change, new_tree_id
     )
     SELECT 
-        node_level - target_level AS level_change,
-        node_lft - space_target - 1 AS left_right_change,
-        target_tree_id AS new_tree_id
-    FROM move_operation_params;
-    -- Close the gap in the original tree by closing the gap
-    INSERT INTO close_gap_operation (size, target_point, tree_id)
-    SELECT node_width, node_lft, node_tree_id
+        level_change, left_right_change, target_tree_id
     FROM move_operation_params;
 END;
 
@@ -800,7 +817,7 @@ WITH tree_with_ancestors AS (
             WHERE a.tree_id = t.tree_id 
                 AND a.lft < t.lft 
                 AND a.rgt > t.rgt
-            ORDER BY a.lft
+            ORDER BY a.tree_id, a.lft
         ) AS ancestor_path,
         (
             SELECT GROUP_CONCAT(a.id, '.') 
@@ -808,7 +825,7 @@ WITH tree_with_ancestors AS (
             WHERE a.tree_id = t.tree_id 
                 AND a.lft < t.lft 
                 AND a.rgt > t.rgt
-            ORDER BY a.lft
+            ORDER BY a.tree_id, a.lft
         ) AS ancestor_id_path,
         (
             SELECT COUNT(*) 
@@ -928,7 +945,7 @@ insert into move_node_operation (node_id, target_node_id, position) values
  (select id from tree where name = 'Root 3'), 
  (select id from tree where name = 'Root 1'), 'left');
 
--- Move Child 1.1.1 to be a root node
+-- -- Move Child 1.1.1 to be a root node
 insert into move_node_operation (node_id, target_node_id, position) values
 (
  (select id from tree where name = 'Child 1.1.1'), 
@@ -975,11 +992,7 @@ insert into move_node_operation (node_id, target_node_id, position) values
  (select id from tree where name = 'Root 1'), 
  (select id from tree where name = 'Child 1.2'), 'left');
 
--- Show final tree structure
-SELECT 'Final tree structure after move:' as comment;
-SELECT tree_id,name, lft, rgt, level FROM tree ORDER BY tree_id, lft;
-
--- Show the complete indented tree
 SELECT 'Indented tree view:' as comment;
-SELECT indented_name FROM tree_indented ORDER BY tree_id, lft;
-select * from move_operation_params_log;
+SELECT id, tree_id, lft, rgt, level, indented_name FROM tree_indented ORDER BY tree_id, lft;
+SELECT * FROM move_operation_params_log;
+DELETE FROM move_operation_params_log;

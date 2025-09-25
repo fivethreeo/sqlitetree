@@ -57,7 +57,7 @@ def get_tree():
 @app.route('/api/trees', methods=['GET'])
 def get_trees():
     conn = get_db()
-    trees = conn.execute('SELECT DISTINCT name FROM tree WHERE level = 0 ORDER BY tree_id').fetchall()
+    trees = conn.execute('SELECT DISTINCT tree_id, name FROM tree WHERE level = 0 ORDER BY tree_id').fetchall()
     return jsonify([dict(tree) for tree in trees])
 
 @app.route('/api/trees', methods=['POST'])
@@ -66,61 +66,67 @@ def create_tree():
     name = data.get('name', 'New Tree')
     try:
         conn = get_db()
+        conn.execute('BEGIN TRANSACTION') 
         conn.execute('INSERT INTO add_root_operation (name) VALUES (?)', (name,))
-        last_id = conn.execute('SELECT id FROM last_operation_id WHERE operation_name = "add_root" ORDER BY id DESC LIMIT 1').fetchone()['id']
-        conn.execute('DELETE FROM last_operation_id WHERE id = ?', (last_id,))
-        conn.commit()
-        return jsonify({'success': True, 'id': last_id}), 200
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'error': str(e)}), 400
-
-
-@app.route('/api/trees/<int:tree_id>/nodes', methods=['GET'])
-def get_tree_nodes(tree_id):
-    conn = get_db()
-    nodes = conn.execute('''
-        SELECT id, tree_id, name, lft, rgt, level 
-        FROM tree WHERE tree_id = ? ORDER BY lft
-    ''', (tree_id,)).fetchall()
-    return jsonify([dict(node) for node in nodes])
-
-@app.route('/api/trees/<int:tree_id>/nodes', methods=['POST'])
-def add_node(tree_id):
-    data = request.get_json()
-    conn = get_db()
-    
-    try:
-        conn.execute('''
-            INSERT INTO add_node_operation (tree_id, target_node_id, name, position)
-            VALUES (?, ?, ?, ?)
-        ''', (tree_id, data['target_node_id'], data['name'], data['position']))
-        last_id = conn.execute('SELECT id FROM last_operation_id WHERE operation_name = "add_node" ORDER BY id DESC LIMIT 1').fetchone()['id']
-        conn.execute('DELETE FROM last_operation_id WHERE id = ?', (last_id,))
-        conn.commit()
-        return jsonify({'success': True, 'id': last_id}), 200
-    except Exception as e:
-        conn.rollback()
-        return jsonify({'error': str(e)}), 400
-    
-
-@app.route('/api/trees/<int:tree_id>/nodes/move', methods=['POST'])
-def move_node(tree_id):
-    data = request.get_json()
-    conn = get_db()
-    
-    try:
-        conn.execute('''
-            INSERT INTO move_node_operation (tree_id, target_node_id, node_id, position)
-            VALUES (?, ?, ?, ?)
-        ''', (tree_id, data['target_node_id'], data['node_id'], data['position']))
         conn.commit()
         return jsonify({'success': True}), 200
     except Exception as e:
         conn.rollback()
         return jsonify({'error': str(e)}), 400
-        conn.close()
 
+@app.route('/api/nodes', methods=['POST'])
+def add_node():
+    data = request.get_json()
+    conn = get_db()
+    
+    try:
+        # Fixed: Use the correct parameter order expected by the trigger
+        conn.execute('BEGIN TRANSACTION') 
+        conn.execute('''
+            INSERT INTO add_node_operation (target_node_id, name, position)
+            VALUES (?, ?, ?)
+        ''', (data['target_node_id'], data['name'], data['position']))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/nodes/move', methods=['POST'])
+def move_node():
+    data = request.get_json()
+    conn = get_db()
+    
+    try:
+        conn.execute('BEGIN TRANSACTION') 
+        conn.execute('''
+            INSERT INTO move_node_operation (node_id, target_node_id, position)
+            VALUES (?, ?, ?)
+        ''', (data['node_id'], data['target_node_id'], data['position']))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/nodes/<int:node_id>', methods=['DELETE'])
+def delete_node(node_id):
+    conn = get_db()
+    
+    try:
+        conn.execute('BEGIN TRANSACTION') 
+        conn.execute('INSERT INTO delete_node_operation (node_id) VALUES (?)', (node_id,))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+
+@app.route('/api/tree/indented', methods=['GET'])
+def get_indented_tree():
+    conn = get_db()
+    tree = conn.execute('SELECT * FROM tree_indented ORDER BY tree_id, lft').fetchall()
+    return jsonify([dict(node) for node in tree])
 
 if __name__ == '__main__':
     app.run(debug=True)
