@@ -1,30 +1,303 @@
-ul[data-editor="true"][role="tree"] {
-    list-style-type: none;
-    padding-left: 20px;
+:root {
+  --ratio: 1.5;
+  --s-5: calc(var(--s-4) / var(--ratio));
+  --s-4: calc(var(--s-3) / var(--ratio));
+  --s-3: calc(var(--s-2) / var(--ratio));
+  --s-2: calc(var(--s-1) / var(--ratio));
+  --s-1: calc(var(--s0) / var(--ratio));
+  --s0: 1rem;
+  --s1: calc(var(--s0) * var(--ratio));
+  --s2: calc(var(--s1) * var(--ratio));
+  --s3: calc(var(--s2) * var(--ratio));
+  --s4: calc(var(--s3) * var(--ratio));
+  --s5: calc(var(--s4) * var(--ratio));
 }
-ul[data-editor="true"][role="tree"] li {
-    cursor: move;
-}
-ul[data-editor="true"][role="tree"] li.dragging {
-    opacity: 0.5;
-}
-ul[data-editor="true"][role="tree"] li .node-content {
-    display: flex;
-    align-items: center;
-    border-style: none none solid none;
-    border-width: 1px;
-    border-color: #ccc;
-}
-ul[data-editor="true"][role="tree"] li .node-content .node-name {
-    flex-grow: 1;
-}
-ul[data-editor="true"][role="tree"] li .node-content button {
-    margin: 1px 5px;
-}   
 
-/* no list style for ul or nested ul with data-editor="true" and role="tree" at any level */
-ul[data-editor="true"][role="tree"],
-ul[data-editor="true"][role="tree"] ul {
-    list-style-type: none;
-    padding-left: 20px;
+.stack {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+}
+
+.stack > * {
+  --space: var(--s1);
+  margin-block: 0;
+} 
+
+.stack > * + * {
+  margin-block-start: var(--space, var(--s1));
+}
+
+.stack-small > * {
+  --space: var(--s-1);
+}
+
+.box {
+  padding: var(--s1);
+  border: 0 solid;
+  outline: var(--border-thin) solid transparent;
+  outline-offset: calc(var(--border-thin) * -1);
+  --color-light: #eee;
+  --color-dark: #222;
+  color: var(--color-dark);
+  background-color: var(--color-light);
+}
+
+.box.bordered {
+    border-color: var(--color-dark);
+    border-width: var(--border-thin, 1px);
+    outline: none;
+    outline-offset: 0;
+}
+
+.box * {
+  color: inherit;
+}
+
+.box.invert {
+  color: var(--color-light);
+  background-color: var(--color-dark);
+  border-color: var(--color-light);
+}
+
+.center {
+  box-sizing: content-box;
+  margin-inline: auto;
+  max-inline-size: var(--measure);
+}
+
+.center.intristic {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cluster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space, 1rem);
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.with-sidebar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  --sidebar-width: 20rem;
+  --content-min-width: 50%;
+}
+
+.with-sidebar > :first-child {
+  flex-basis: var(--sidebar-width);
+  flex-grow: 1;
+}
+
+.with-sidebar > :last-child {
+  flex-basis: 0;
+  flex-grow: 999;
+  min-inline-size: var(--content-min-width);
+}
+
+.with-sidebar.right > :last-child {
+  flex-basis: var(--sidebar-width);
+  flex-grow: 1;
+}
+
+.with-sidebar.right > :first-child {
+  flex-basis: 0;
+  flex-grow: 999;
+  min-inline-size: var(--content-min-width);
+}
+
+
+.switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s1);
+  --treshold: 30rem;
+}
+
+.switcher > * {
+  flex-grow: 1;
+  flex-basis: calc(( var(--treshold) - 100%) * 999);
+}
+
+.switcher_max5 > :nth-last-child(n+ 5),
+.switcher_max5 > :nth-last-child(n+ 5) ~ * {
+  flex-basis: 100%;
+}
+
+.cover {
+  display: flex;
+  flex-direction: column;
+  min-block-size: 100vh;
+  padding: 1rem;
+}
+
+.cover > * {
+  margin-block: 1rem;
+}
+
+.cover > :first-child:not(.centered) {
+  margin-block-start: 0;
+}
+
+.cover > :last-child:not(.centered) {
+  margin-block-end: 0;
+}
+
+.cover > .centered {
+  margin-block: auto;
+}
+
+
+.grid {
+  display: grid;
+  grid-gap: 1rem;
+}
+
+@supports (width: min(250px, 100%)) {
+  .grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
+  }
+}
+
+
+.frame {
+  --n: 16;
+  --d: 9;
+  aspect-ratio: var(--n) / var(--d);
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.frame > img,
+.frame > video {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: cover;
+}
+
+
+.reel {
+  display: flex;
+  block-size: auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-color: #fff #000;
+}
+
+.reel::-webkit-scrollbar {
+  block-size: 1rem;
+}
+
+.reel::-webkit-scrollbar-track {
+  background-color: #000;
+}
+
+.reel::-webkit-scrollbar-thumb {
+  background-color: #000;
+  background-image: linear-gradient(#000 0, #000 0.25rem, #fff 0.25rem, #fff 0.75rem, #000 0.75rem);
+}
+
+.reel > * {
+  flex: 0 0 auto;
+}
+
+
+.reel > img {
+  block-size: 100%;
+  flex-basis: auto;
+  width: auto;
+}
+
+.reel > * + * {
+  margin-inline-start: 1rem;
+}
+
+.reel.overflowing {
+  padding-block-end: 1rem;
+}
+
+/*
+(function() {
+  const className = 'reel';
+  const reels = Array.from(document.querySelectorAll(`.${className}`));
+  const toggleOverflowClass = elem => {
+    elem.classList.toggle('overflowing', elem.scrollWidth > elem.clientWidth);
+  };
+
+  for (let reel of reels) {
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(entries => {
+        toggleOverflowClass(entries[0].target);
+      }).observe(reel);
+    }
+
+    if ('MutationObserver' in window) {
+      new MutationObserver(entries => {
+        toggleOverflowClass(entries[0].target);
+      }).observe(reel, {childList: true});
+    }
+  }
+})();
+*/
+
+.with-imposter {
+  position: relative;
+}
+
+.imposter {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.imposter_fixed {
+  position: fixed;
+}
+
+.imposter.contain {
+  --margin: 0px;
+  overflow: auto;
+  max-inline-size: calc(100% - (var(--margin) * 2));
+  max-block-size: calc(100% - (var(--margin) * 2));
+}
+.icon {
+  width: 0.75em;
+  width: 1cap;
+  height: 0.75em;
+  height: 1cap;
+}
+
+.with-icon {
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.with-icon .icon {
+  margin-inline-end: 1rem;
+}
+
+.imposter {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.imposter.contain {
+  --margin: 0px;
+  overflow: auto;
+  max-inline-size: calc(100% - (var(--margin) * 2));
+  max-block-size: calc(100% - (var(--margin) * 2));
+}
+
+.hidden {
+  display: none;
 }

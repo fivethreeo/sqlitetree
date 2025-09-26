@@ -92,6 +92,20 @@ def add_node():
         conn.rollback()
         return jsonify({'error': str(e)}), 400
 
+@app.route('/api/nodes/<int:node_id>', methods=['PUT'])
+def rename_node(node_id):
+    data = request.get_json()
+    conn = get_db()
+    
+    try:
+        conn.execute('BEGIN TRANSACTION') 
+        conn.execute('UPDATE tree SET name = ? WHERE id = ?', (data['name'], node_id))
+        conn.commit()
+        return jsonify({'success': True}), 200
+    except Exception as e:
+        conn.rollback()
+        return jsonify({'error': str(e)}), 400
+
 @app.route('/api/nodes/move', methods=['POST'])
 def move_node():
     data = request.get_json()

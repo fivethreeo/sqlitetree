@@ -55,6 +55,13 @@ class TreeAPI {
             method: 'DELETE'
         });
     }
+
+    static async renameNode(nodeId, newName) {
+        return this.request(`/api/nodes/${nodeId}`, {
+            method: 'PUT',
+            body: JSON.stringify({ name: newName })
+        });
+    }
 }
 
 // Export for use in other modules

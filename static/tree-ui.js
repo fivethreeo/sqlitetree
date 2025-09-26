@@ -3,6 +3,7 @@ import { TreeAPI } from '/static/tree-api.js';
 class TreeUI {
     constructor() {
         this.treeContainer = $('#tree-container');
+        this.treeForm = $('#tree_form').get(0);
         this.apiOutput = $('#api-output');
         this.init();
     }
@@ -52,7 +53,7 @@ class TreeUI {
                     'responsive': false
                 }
             },
-            'plugins': ['contextmenu', 'dnd', 'search'],
+            'plugins': ['contextmenu', 'dnd', 'search', 'checkbox'],
             'contextmenu': {
                 'items': this.getContextMenuItems.bind(this)
             }
@@ -154,22 +155,48 @@ class TreeUI {
     }
 
     async addChildNode(node) {
-        const name = prompt('Enter child node name:', 'New Child');
-        if (name) {
-            try {
-                await TreeAPI.addNode(node.data.id, name, 'last-child');
-                await this.loadTree();
-            } catch (error) {
-                alert('Error adding node: ' + error.message);
+        // Render html5 template from html to hidden imposter div and show it
+        const template = document.getElementById('create-node-template');
+        const clone = document.importNode(template.content, true);
+        const form = clone.querySelector('form');
+        const cancelBtn = clone.querySelector('#cancel-create-node');
+       const nodeTypeSpan = clone.querySelector('.node-type');
+       nodeTypeSpan.textContent = 'Child';
+
+        this.treeForm.innerHTML = '';
+        this.treeForm.appendChild(clone);
+        this.treeForm.classList.remove('hidden');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = form.querySelector('#node-name').value;
+            if (name) {
+                try {
+                    await TreeAPI.addNode(node.data.id, name, 'last-child');
+                    await this.loadTree();
+                    this.treeForm.innerHTML = '';
+                    this.treeForm.classList.add('hidden');
+
+                } catch (error) {
+                    alert('Error creating node: ' + error.message);
+                }
             }
-        }
+        });
+        cancelBtn.addEventListener('click', () => {
+            this.treeForm.innerHTML = '';
+            this.treeForm.classList.add('hidden');
+        });
     }
 
     async renameNode(node) {
         const newName = prompt('Enter new name:', node.data.name);
         if (newName && newName !== node.data.name) {
-            // You'll need to implement a rename API endpoint
-            alert('Rename functionality would be implemented here');
+            try {
+                await TreeAPI.renameNode(node.data.id, newName);
+                await this.loadTree();
+            } catch (error) {
+                alert('Error renaming node: ' + error.message);
+            }
         }
     }
 
@@ -203,12 +230,13 @@ class TreeUI {
         try {
             const nodeId = data.node.id;
             const targetNodeId = data.parent;
-            const position = data.position; // 'before', 'after', 'inside'
-            
+            const position = data.position; // index among siblings in target
+            console.log(`Moving node ${nodeId} to parent ${targetNodeId} at position ${position}`);
             // Convert jsTree position to our API position
-            const apiPosition = this.convertPosition(position);
-            
-            await TreeAPI.moveNode(nodeId, targetNodeId, apiPosition);
+            const apiTargetPosition = this.convertPosition(position, targetNodeId);
+            console.log(`Converted position:`, apiTargetPosition);
+
+            await TreeAPI.moveNode(nodeId, apiTargetPosition.id, apiTargetPosition.position);
             await this.loadTree(); // Reload to ensure consistency
             
         } catch (error) {
@@ -217,25 +245,67 @@ class TreeUI {
         }
     }
 
-    convertPosition(jsTreePosition) {
-        const positionMap = {
-            'inside': 'first-child',
-            'before': 'left',
-            'after': 'right'
-        };
-        return positionMap[jsTreePosition] || 'last-child';
+    convertPosition(jsTreePosition, targetNodeId) {
+        const tree = this.treeContainer.jstree(true);
+        
+        if (targetNodeId === '#') {
+            // Get nodes in tree_id order
+            const rootNodes = tree.get_json('#').sort((a, b) => a.data.tree_id - b.data.tree_id);
+            console.log('Root nodes:', rootNodes);
+            if (jsTreePosition === 0) {
+                return { id: rootNodes[0]?.id || null, position: 'left' };
+            } else {
+                const siblingId = rootNodes[jsTreePosition]?.id || null;
+                return { id: siblingId, position: 'right' };
+            }
+        } else {
+            // Moving to a specific parent node
+            const targetNode = tree.get_json(targetNodeId);
+            const children = targetNode.children;
+
+            if (jsTreePosition === 0) {
+                return { id: targetNodeId, position: 'first-child' };
+            } else if (jsTreePosition === children.length) {
+                return { id: targetNodeId, position: 'last-child' };
+            } else {
+                const siblingId = children[jsTreePosition - 1].id;
+                return { id: siblingId, position: 'right' };
+            }
+        }
     }
 
     async createTree() {
-        const name = prompt('Enter tree name:', 'New Tree');
-        if (name) {
-            try {
-                await TreeAPI.createTree(name);
-                await this.loadTree();
-            } catch (error) {
-                alert('Error creating tree: ' + error.message);
+        // Render html5 template from html to hidden imposter div and show it
+        const template = document.getElementById('create-node-template');
+        const clone = document.importNode(template.content, true);
+        const form = clone.querySelector('form');
+        const cancelBtn = clone.querySelector('#cancel-create-node');
+        const nodeTypeSpan = clone.querySelector('.node-type');
+        nodeTypeSpan.textContent = 'Root';
+
+        this.treeForm.innerHTML = '';
+        this.treeForm.appendChild(clone);
+        this.treeForm.classList.remove('hidden');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = form.querySelector('#node-name').value;
+            if (name) {
+                try {
+                    await TreeAPI.createTree(name);
+                    await this.loadTree();
+                    this.treeForm.innerHTML = '';
+                    this.treeForm.classList.add('hidden');
+
+                } catch (error) {
+                    alert('Error creating tree: ' + error.message);
+                }
             }
-        }
+        });
+        cancelBtn.addEventListener('click', () => {
+            this.treeForm.innerHTML = '';
+            this.treeForm.classList.add('hidden');
+        });
     }
 }
 
