@@ -11,8 +11,31 @@
   --s3: calc(var(--s2) * var(--ratio));
   --s4: calc(var(--s3) * var(--ratio));
   --s5: calc(var(--s4) * var(--ratio));
+
+  --measure: 60ch;
 }
 
+* {
+  max-inline-size: var(--measure);
+}
+
+html,
+body,
+div,
+header,
+nav,
+main,
+footer {
+  max-inline-size: none;
+}
+
+.max-inline-size\:measure {
+  max-inline-size: var(--measure);
+}
+
+.max-inline-size\:measure\/2 {
+  max-inline-size: calc(var(--measure) / 2);
+}
 .stack {
   display: flex;
   flex-direction: column;
@@ -30,7 +53,7 @@
 }
 
 .stack-small > * {
-  --space: var(--s-1);
+  --space: var(--s-3);
 }
 
 .box {
@@ -44,11 +67,15 @@
   background-color: var(--color-light);
 }
 
-.box.bordered {
+.box\:bordered {
     border-color: var(--color-dark);
     border-width: var(--border-thin, 1px);
     outline: none;
     outline-offset: 0;
+}
+
+.box\:rounded {
+  border-radius: var(--s1);
 }
 
 .box * {
@@ -258,7 +285,7 @@
   transform: translate(-50%, -50%);
 }
 
-.imposter_fixed {
+.imposter-fixed {
   position: fixed;
 }
 

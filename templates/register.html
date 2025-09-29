@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}{% trans %}Register User{% endtrans %}{% endblock %}
+
+{% block content %}
+<div class="box box:bordered box:rounded">
+    <div class="stack">
+        <h2 class="center">{% trans %}Register New User{% endtrans %}</h2>
+        
+        <form method="POST" class="stack">
+            {{ form.hidden_tag() }}
+            
+            <div class="stack stack-small">
+                {{ form.username.label }}
+                {{ form.username }}
+                {% if form.username.errors %}
+                    <div class="error-message">
+                        {% for error in form.username.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="stack stack-small">
+                {{ form.email.label }}
+                {{ form.email }}
+                {% if form.email.errors %}
+                    <div class="error-message">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="stack stack-small">
+                {{ form.password.label }}
+                {{ form.password }}
+                {% if form.password.errors %}
+                    <div class="error-message">
+                        {% for error in form.password.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div>
+                {{ form.submit }}
+            </div>
+        </form>
+        
+        <div class="center">
+            <a href="{{ url_for('login') }}">{{ _('Already have an account? Log in here') }}</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -4,48 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tree Manager</title>
-    <!-- jsTree CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/themes/default/style.min.css" />
     <link rel="stylesheet" href="/static/style.css" />
 </head>
 <body>
-    <div class="with-sidebar ">
+    <div class="cover">
         <div class="stack">
-                <button id="create-tree" class="btn btn-primary">Create New Tree</button>
-                <button id="refresh-tree" class="btn btn-secondary">Refresh</button>
-                <button id="expand-all" class="btn btn-outline-info">Expand All</button>
-                <button id="collapse-all" class="btn btn-outline-info">Collapse All</button>
+            <div class="cluster">
+                <h1>Tree Manager</h1>
+                <div class="cluster">
+                    <span>Logged in as user</span>
+                    <a href="{{ url_for('logout') }}">Logout</a>
+                </div>
             </div>
 
+            <div class="with-sidebar">
+                <div class="stack">
+                    <button id="create-tree">Create New Tree</button>
+                    <button id="refresh-tree">Refresh</button>
+                    <button id="expand-all">Expand All</button>
+                    <button id="collapse-all">Collapse All</button>
+                </div>
 
-        <div class="stack with-imposter">
-            <div id="tree-container"></div>
-            <div id="tree_form" class="imposter imposter-fixed box hidden">
-                
+                <div class="stack with-imposter">
+                    <div id="tree-container"></div>
+                    <div id="tree_form" class="imposter imposter-fixed box hidden">
+                    </div>
+                    <template id="create-node-template">
+                        <form class="stack">
+                            <h1>Create New <span class="node-type"></span> Node</h1>
+                            <div class="stack stack-small">
+                            <label for="node-name">Name:</label>
+                            <input type="text" id="node-name" required />
+                            </div>
+                            <div class="center">
+                                <input type="submit" value="Create Node" />
+                                <input type="button" id="cancel-create-node" value="Cancel" />
+                            </div>
+                        </form>
+                    </template>
+                </div>
             </div>
-            <template id="create-node-template">
-                <form class="stack">
-                    <h1>Create New <span class="node-type"></span> Node</h1>
-                    <div class="stack stack-small">
-                    <label for="node-name">Name:</label>
-                    <input type="text" id="node-name" required />
-                    </div>
-                    <div class="center">
-                        <input type="submit" value="Create Node" />
-                        <input type="button" id="cancel-create-node" value="Cancel" />
-                    </div>
-                </form>
-            </template>
         </div>
     </div>
 
-    <!-- jQuery (required for jsTree) -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- jsTree -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.3.15/jstree.min.js"></script>
-    <!-- Our API module -->
     <script type="module" src="/static/tree-api.js"></script>
-    <!-- Our UI module -->
     <script type="module" src="/static/tree-ui.js"></script>
 </body>
 </html>

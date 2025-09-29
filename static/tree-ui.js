@@ -1,4 +1,6 @@
+import i18next from 'https://cdn.jsdelivr.net/npm/i18next@25.5.2/+esm'
 import { TreeAPI } from '/static/tree-api.js';
+
 
 class TreeUI {
     constructor() {
@@ -134,19 +136,19 @@ class TreeUI {
     getContextMenuItems(node) {
         const items = {
             'add_child': {
-                label: 'Add Child',
+                label: i18next.t('Add Child to {name}}', { name: node.data.name }) || `Add Child to ${node.data.name}`,
                 action: () => this.addChildNode(node)
             },
             'rename': {
-                label: 'Rename',
+                label: i18next.t('Rename {{name}}', { name: node.data.name }) || `Rename ${node.data.name}`,
                 action: () => this.renameNode(node)
             },
             'delete': {
-                label: 'Delete',
+                label: i18next.t('Delete {{name}}', { name: node.data.name }) || `Delete ${node.data.name}`,
                 action: () => this.deleteNode(node)
             },
             'move': {
-                label: 'Move',
+                label: i18next.t('Move {{name}}', { name: node.data.name }) || `Move ${node.data.name}`,
                 action: () => this.moveNode(node)
             }
         };
@@ -310,6 +312,6 @@ class TreeUI {
 }
 
 // Initialize when DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     window.treeUI = new TreeUI();
 });

@@ -1,0 +1,201 @@
+# Norwegian Bokmål (Norway) translations for PROJECT.
+# Copyright (C) 2025 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2025.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2025-09-27 20:20+0200\n"
+"PO-Revision-Date: 2025-09-28 05:27+0200\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language: nb_NO\n"
+"Language-Team: nb_NO <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.17.0\n"
+
+#: app.py:50 app.py:56
+msgid "Username"
+msgstr "Brukernavn"
+
+#: app.py:51 app.py:61
+msgid "Email"
+msgstr "Epost"
+
+#: app.py:52 app.py:57
+msgid "Password"
+msgstr "Passord"
+
+#: app.py:53
+msgid "Register"
+msgstr "Registrer"
+
+#: app.py:58 templates/login.html:8
+msgid "Log In"
+msgstr "Logg Inn"
+
+#: app.py:62
+msgid "Send Reset Link"
+msgstr "Send Tilbakestillingslenke"
+
+#: app.py:65
+msgid "New Password"
+msgstr "Nytt Passord"
+
+#: app.py:66
+msgid "Confirm New Password"
+msgstr "Bekreft Nytt Passord"
+
+#: app.py:67 templates/reset_password.html:3 templates/reset_password.html:8
+msgid "Reset Password"
+msgstr "Reset Passord"
+
+#: app.py:134
+msgid "Verify Your Email Address"
+msgstr "Verifiser Din Epost Adresse"
+
+#: app.py:210
+msgid "Registration successful! Please check your email to verify your account."
+msgstr "Registrering vellykket! Sjekk e-posten din for å verifisere kontoen din."
+
+#: app.py:212
+msgid ""
+"Registration successful but failed to send verification email. Please "
+"contact support."
+msgstr "Registrering vellykket, men kunne ikke sende verifiserings-e-post. Vennligst kontakt kundestøtte."
+
+#: app.py:220
+msgid "An error occurred during registration."
+msgstr "En feil oppstod under registrering."
+
+#: app.py:254
+msgid "Email verified successfully! You can now log in."
+msgstr "E-post verifisert! Du kan nå logge inn."
+
+#: app.py:270
+msgid "Password Reset Request"
+msgstr "Forespørsel om tilbakestilling av passord"
+
+#: app.py:305
+msgid "Please verify your email before resetting your password."
+msgstr "Vennligst verifiser e-posten din før du tilbakestiller passordet."
+
+#: app.py:323
+msgid "Password reset link sent! Please check your email."
+msgstr "Tilbakestillingslenke for passord sendt! Sjekk e-posten din."
+
+#: app.py:325
+msgid "Failed to send password reset email. Please try again later."
+msgstr "Kunne ikke sende e-post for tilbakestilling av passord. Vennligst prøv igjen senere."
+
+#: app.py:329 app.py:450
+msgid "Email not found."
+msgstr "E-post ikke funnet."
+
+#: app.py:344
+msgid "Invalid or expired password reset token."
+msgstr "Ugyldig eller utløpt tilbakestillingstoken for passord."
+
+#: app.py:350
+msgid "Password reset token has expired."
+msgstr "Tilbakestillingstoken for passord har utløpt."
+
+#: app.py:355
+msgid "Passwords do not match."
+msgstr "Passordene stemmer ikke overens."
+
+#: app.py:375
+msgid "Password reset successfully! You can now log in with your new password."
+msgstr "Passord tilbakestilt! Du kan nå logge inn med ditt nye passord."
+
+#: app.py:380
+msgid "Error resetting password."
+msgstr "Feil ved tilbakestilling av passord."
+
+#: app.py:396
+msgid "Please verify your email before logging in."
+msgstr "Vennligst verifiser e-posten din før du logger inn."
+
+#: app.py:401
+msgid "Login successful!"
+msgstr "Innlogging vellykket!"
+
+#: app.py:404
+msgid "Invalid username or password."
+msgstr "Ugyldig brukernavn eller passord."
+
+#: app.py:411
+msgid "You have been logged out."
+msgstr "Du har blitt logget ut."
+
+#: app.py:426
+msgid "Email is already verified."
+msgstr "E-post er allerede verifisert."
+
+#: app.py:444
+msgid "Verification email sent! Please check your inbox."
+msgstr "Verifiserings-e-post sendt! Sjekk innboksen din."
+
+#: app.py:446
+msgid "Failed to send verification email. Please try again later."
+msgstr "Kunne ikke sende verifiserings-e-post. Vennligst prøv igjen senere."
+
+#. Add Child to ${node.data.id}
+#: static/tree-ui.js:149
+#, python-format
+msgid "Add Child to %s"
+msgstr "Legg til barn til %s"
+
+#. Rename ${node.data.id}
+#: static/tree-ui.js:153
+#, python-format
+msgid "Rename %s"
+msgstr "Gi nytt navn til %s"
+
+#. Delete ${node.data.id}
+#: static/tree-ui.js:157
+#, python-format
+msgid "Delete %s"
+msgstr "Slett %s"
+
+#. Move ${node.data.id}
+#: static/tree-ui.js:161
+#, python-format
+msgid "Move %s"
+msgstr "Flytt %s"
+
+#: templates/forgot_password.html:3 templates/forgot_password.html:8
+msgid "Forgot Password"
+msgstr "Glemt passord"
+
+#: templates/forgot_password.html:31 templates/reset_password.html:43
+msgid "Back to Login"
+msgstr "Tilbake til innlogging"
+
+#: templates/login.html:3
+msgid "Log in"
+msgstr "Logg inn"
+
+#: templates/login.html:43
+msgid "Not a user? Register here"
+msgstr "Ikke bruker? Registrer deg her"
+
+#: templates/login.html:47
+msgid "Forgot password?"
+msgstr "Glemt passord?"
+
+#: templates/register.html:3
+msgid "Register User"
+msgstr "Registrer bruker"
+
+#: templates/register.html:8
+msgid "Register New User"
+msgstr "Registrer ny bruker"
+
+#: templates/register.html:55
+msgid "Already have an account? Log in here"
+msgstr "Har du allerede en konto? Logg inn her"

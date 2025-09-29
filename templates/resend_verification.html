@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Send Verification Email{% endblock %}
+
+{% block content %}
+<div class="box box:bordered box:rounded">
+    <div class="stack">
+        <h2 class="center">Resend Verification Email</h2>
+        
+        <form method="POST" class="stack">
+            <div class="stack stack-small">
+                <label for="email">Email Address:</label>
+                <input type="email" id="email" name="email" required />
+            </div>
+            
+            <div>
+                <input type="submit" value="Send Verification Email" />
+            </div>
+        </form>
+        
+        <div class="center">
+            <a href="{{ url_for('login') }}">Back to Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
