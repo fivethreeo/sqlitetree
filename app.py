@@ -404,6 +404,20 @@ def login():
             flash(_('Invalid username or password.'), 'error')
 
     return render_template("login.html", form=form)
+    """
+    else:
+        conn = get_db()
+        user = conn.execute(
+            'SELECT * FROM users WHERE username = ? OR email = ?', (request.json.get('username'), request.json.get('username'))
+        ).fetchone()
+        if user and check_password_hash(user['password'], request.json.get('password')):
+            if not user['is_active']:
+                return jsonify({'error': _('Please verify your email before logging in.')}), 403
+            
+            return jsonify({'success': True}), 200
+        else:
+            return jsonify({'error': _('Invalid username or password.')}), 401
+    """
 
 @app.route('/logout')
 def logout():
